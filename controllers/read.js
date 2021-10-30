@@ -1,11 +1,10 @@
 const { Author, Book, db } = require('../db');
-const args = process.argv.slice(2);
 
-const read = async () => {
+const read = async (title) => {
   try {
     const book = await Book.findOne({
       where: {
-        title: args[0],
+        title,
       },
       include: Author,
     });
@@ -20,4 +19,4 @@ const read = async () => {
   }
 };
 
-read();
+read(process.argv[2]);

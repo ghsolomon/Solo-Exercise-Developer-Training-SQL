@@ -1,11 +1,10 @@
 const { Book, db } = require('../db');
-const args = process.argv.slice(2);
 
-const del = async () => {
+const del = async (title) => {
   try {
-    const book = await Book.destroy({
+    await Book.destroy({
       where: {
-        title: args[0],
+        title,
       },
     });
     console.log('Book deleted successfully');
@@ -15,4 +14,4 @@ const del = async () => {
   }
 };
 
-del();
+del(process.argv[2]);
