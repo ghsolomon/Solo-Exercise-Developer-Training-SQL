@@ -1,22 +1,30 @@
-const { Client } = require('pg');
-const host = 'localhost';
-const port = 5432;
-const database = 'books';
-const client = new Client({ host, port, database });
+const { Author, Book, db } = require('../db');
+const args = process.argv.slice(2);
 
-const create = async (text, values) => {
+const create = async () => {
   try {
-    await client.connect();
-    const result = await client.query(text, values);
-    client.end();
-    console.log(result.rows[0]);
-  } catch (error) {
-    console.log(error);
+    const book = await Book.create({
+      title: args[0],
+      edition: args[1],
+      isbn13: args[2],
+      description: args[3],
+      language: args[4],
+      publicationDate: args[5],
+    });
+
+    const authorArray = Array.isArray(args[6]) ? args[6] : [args[6]];
+
+    for (let authorName of authorArray) {
+      const [author] = await Author.findOrCreate({
+        where: { name: authorName },
+      });
+      await book.addAuthor(author);
+    }
+    console.log('Book added successfully');
+    db.close();
+  } catch (err) {
+    console.log(err);
   }
 };
 
-const values = process.argv.slice(2);
-const query =
-  'INSERT INTO "Books"("createdAt","updatedAt",title,edition,isbn13,description,language, "publicationDate") VALUES( $1, $1,$2, $3, $4, $5, $6, $7) RETURNING title, edition, isbn13, description, language, "publicationDate"';
-
-create(query, [new Date(), ...values]);
+create();

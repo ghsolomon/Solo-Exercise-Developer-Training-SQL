@@ -1,22 +1,18 @@
-const { Client } = require('pg');
-const host = 'localhost';
-const port = 5432;
-const database = 'books';
-const client = new Client({ host, port, database });
+const { Book, db } = require('../db');
+const args = process.argv.slice(2);
 
-const del = async (text, values) => {
+const del = async () => {
   try {
-    await client.connect();
-    const result = await client.query(text, values);
-    client.end();
-    console.log(`Deleted ${values}`);
-  } catch (error) {
-    console.log(error);
+    const book = await Book.destroy({
+      where: {
+        title: args[0],
+      },
+    });
+    console.log('Book deleted successfully');
+    db.close();
+  } catch (err) {
+    console.log(err);
   }
 };
 
-const values = process.argv.slice(2);
-const query = 'DELETE FROM "Books" WHERE title=$1;';
-for (let value of values) {
-  del(query, [value]);
-}
+del();

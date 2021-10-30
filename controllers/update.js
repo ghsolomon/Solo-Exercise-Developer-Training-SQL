@@ -1,22 +1,39 @@
-const { Client } = require('pg');
-const host = 'localhost';
-const port = 5432;
-const database = 'books';
-const client = new Client({ host, port, database });
+const { Author, Book, db } = require('../db');
+const args = process.argv.slice(2);
 
-const update = async (text, values) => {
+const update = async () => {
   try {
-    await client.connect();
-    const result = await client.query(text, values);
-    client.end();
-    console.log(result.rows[0]);
-  } catch (error) {
-    console.log(error);
+    const book = await Book.findOne({
+      where: {
+        title: args[0],
+      },
+      include: Author,
+    });
+    if (book) {
+      book.edition = args[1];
+      book.isbn13 = args[2];
+      book.description = args[3];
+      book.language = args[4];
+      book.publicationDate = args[5];
+      await book.save();
+
+      const authorArray = Array.isArray(args[6]) ? args[6] : [args[6]];
+      const authors = [];
+      for (let authorName of authorArray) {
+        const [author] = await Author.findOrCreate({
+          where: { name: authorName },
+        });
+        authors.push(author);
+      }
+      await book.setAuthors(authors);
+      console.log('Book updated successfully');
+    } else {
+      console.log('Book not found');
+    }
+    db.close();
+  } catch (err) {
+    console.log(err);
   }
 };
 
-const values = process.argv.slice(2);
-const query =
-  'UPDATE "Books" SET edition=$2, isbn13=$3, description=$4, language=$5, "publicationDate"=$6 WHERE title=$1 RETURNING title, edition, isbn13, description, language, "publicationDate";';
-
-update(query, values);
+update();

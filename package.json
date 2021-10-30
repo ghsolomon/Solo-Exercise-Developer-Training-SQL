@@ -6,7 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "create": "node ./controllers/create.js",
+    "delete": "node ./controllers/delete.js",
+    "read": "node ./controllers/read.js",
+    "update": "node ./controllers/update.js"
+
   },
   "keywords": [],
   "author": "",
