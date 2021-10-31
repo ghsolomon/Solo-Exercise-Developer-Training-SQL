@@ -12,6 +12,7 @@ const Book = db.define('Book', {
   isbn13: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   description: {
     type: DataTypes.TEXT,

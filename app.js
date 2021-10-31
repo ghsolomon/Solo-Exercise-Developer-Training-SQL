@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const api = require('./api');
 const app = express();
 app.use(morgan('dev'));
+app.use(express.urlencoded({ extended: false }));
 app.use('/api', api);
 
 const PORT = 3000;
