@@ -1,27 +1,31 @@
 const { Router } = require('express');
 const { Book, Author } = require('../db');
+const { bookList, singleBook } = require('../views');
 
 const router = Router();
 
 router.get('/', async (req, res, next) => {
   try {
     res.send(
-      await Book.findAll({
-        attributes: [
-          'isbn13',
-          'title',
-          'edition',
-          'description',
-          'language',
-          'publicationDate',
-        ],
-        order: [['isbn13', 'ASC']],
-        include: {
-          model: Author,
-          attributes: ['name'],
-          through: { attributes: [] },
-        },
-      })
+      bookList(
+        await Book.findAll({
+          attributes: [
+            'isbn13',
+            'title',
+            'edition',
+            'description',
+            'language',
+            'publicationDate',
+          ],
+          order: [['isbn13', 'ASC']],
+          include: {
+            model: Author,
+            as: 'authors',
+            attributes: ['name'],
+            through: { attributes: [] },
+          },
+        })
+      )
     );
   } catch (error) {
     next(error);
@@ -31,23 +35,26 @@ router.get('/', async (req, res, next) => {
 router.get('/:isbn13', async (req, res, next) => {
   try {
     res.send(
-      await Book.findOne({
-        where: { isbn13: req.params.isbn13 },
-        attributes: [
-          'isbn13',
-          'title',
-          'edition',
-          'description',
-          'language',
-          'publicationDate',
-        ],
-        order: [['isbn13', 'ASC']],
-        include: {
-          model: Author,
-          attributes: ['name'],
-          through: { attributes: [] },
-        },
-      })
+      singleBook(
+        await Book.findOne({
+          where: { isbn13: req.params.isbn13 },
+          attributes: [
+            'isbn13',
+            'title',
+            'edition',
+            'description',
+            'language',
+            'publicationDate',
+          ],
+          order: [['isbn13', 'ASC']],
+          include: {
+            model: Author,
+            as: 'authors',
+            attributes: ['name'],
+            through: { attributes: [] },
+          },
+        })
+      )
     );
   } catch (error) {
     next(error);

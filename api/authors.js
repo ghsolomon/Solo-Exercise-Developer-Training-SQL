@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { Author, Book } = require('../db');
+const { singleAuthor } = require('../views');
 
 const router = Router();
 
@@ -22,7 +23,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:authorName', async (req, res, next) => {
   try {
     const foundAuthor = await Author.findByName(req.params.authorName);
-    res.json(foundAuthor);
+    res.send(singleAuthor(foundAuthor));
   } catch (error) {
     next(error);
   }

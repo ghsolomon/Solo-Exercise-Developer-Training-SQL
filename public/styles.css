@@ -1,0 +1,12 @@
+td {
+  padding: 0.2em;
+  text-align: left;
+  vertical-align: top;
+}
+td:first-child {
+  width: 15%;
+}
+td>ul {
+  margin: 0;
+  padding-left: 1em;
+}

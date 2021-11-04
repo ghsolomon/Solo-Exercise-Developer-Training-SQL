@@ -18,7 +18,7 @@ Author.findByName = async (name) => {
     },
     include: {
       model: Book,
-      attributes: ['title'],
+      as: 'books',
       through: { attributes: [] },
     },
   });

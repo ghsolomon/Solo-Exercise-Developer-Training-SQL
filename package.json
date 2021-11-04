@@ -11,13 +11,13 @@
     "delete": "node ./controllers/delete.js",
     "read": "node ./controllers/read.js",
     "update": "node ./controllers/update.js"
-
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "html-template-tag": "^4.0.0",
     "morgan": "^1.10.0",
     "pg": "^8.7.1",
     "sequelize": "^6.8.0"

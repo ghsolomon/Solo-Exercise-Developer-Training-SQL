@@ -5,7 +5,8 @@ const api = require('./api');
 const app = express();
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
-app.use('/api', api);
+app.use(express.static('public'));
+app.use('/', api);
 
 const PORT = 3000;
 app.listen(PORT, () => {
