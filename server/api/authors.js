@@ -23,7 +23,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:authorName', async (req, res, next) => {
   try {
     const foundAuthor = await Author.findByName(req.params.authorName);
-    res.send(singleAuthor(foundAuthor));
+    res.json(foundAuthor);
   } catch (error) {
     next(error);
   }

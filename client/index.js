@@ -1,3 +1,4 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-ReactDOM.render(<>TESTING</>, document.getElementById('app'));
+import Main from './components/Main';
+ReactDOM.render(<Main />, document.getElementById('app'));

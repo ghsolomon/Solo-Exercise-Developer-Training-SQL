@@ -7,7 +7,7 @@ const app = express();
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
-app.use('/', api);
+app.use('/api', api);
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'index.html'));
 });
