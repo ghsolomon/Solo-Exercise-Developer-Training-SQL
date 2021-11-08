@@ -1,16 +1,22 @@
 import axios from 'axios';
 import React, { Component } from 'react';
 import AuthorLink from './AuthorLink';
+import { Link } from 'react-router-dom';
 class Book extends Component {
   constructor(props) {
     super(props);
     this.state = { book: { authors: [] } };
+    this.handleDelete = this.handleDelete.bind(this);
   }
   async componentDidMount() {
     const { data } = await axios.get(
       `/api/books/${this.props.match.params.isbn13}`
     );
     this.setState({ book: data });
+  }
+  async handleDelete() {
+    await axios.delete(`/api/books/${this.props.match.params.isbn13}`);
+    this.props.history.push('/');
   }
   render() {
     const book = this.state.book;
@@ -53,6 +59,10 @@ class Book extends Component {
             </tr>
           </tbody>
         </table>
+        <Link to={`/books/${book.isbn13}/edit`}>
+          <button>Edit</button>
+        </Link>
+        <button onClick={this.handleDelete}>Delete</button>
       </>
     );
   }

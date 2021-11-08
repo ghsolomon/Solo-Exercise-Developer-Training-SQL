@@ -59,7 +59,32 @@ router.get('/:isbn13', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const createdBook = await Book.create(req.body);
+    const {
+      title,
+      isbn13,
+      edition,
+      description,
+      language,
+      publicationDate,
+      authors,
+    } = req.body;
+    const createdBook = await Book.create({
+      title,
+      isbn13,
+      edition,
+      description,
+      language,
+      publicationDate,
+    });
+    const authorsArray = await Promise.all(
+      authors.split(', ').map(async (authorName) => {
+        const [author] = await Author.findOrCreate({
+          where: { name: authorName },
+        });
+        return author;
+      })
+    );
+    await createdBook.setAuthors(authorsArray);
     res.json(createdBook);
   } catch (error) {
     next(error);
@@ -74,7 +99,33 @@ router.put('/:isbn13', async (req, res, next) => {
     if (!foundBook) {
       res.sendStatus(404);
     } else {
-      const updatedBook = await foundBook.update(req.body);
+      const {
+        title,
+        isbn13,
+        edition,
+        description,
+        language,
+        publicationDate,
+        authors,
+      } = req.body;
+      console.log(req.body);
+      const updatedBook = await foundBook.update({
+        title,
+        isbn13,
+        edition,
+        description,
+        language,
+        publicationDate,
+      });
+      const authorsArray = await Promise.all(
+        authors.split(', ').map(async (authorName) => {
+          const [author] = await Author.findOrCreate({
+            where: { name: authorName },
+          });
+          return author;
+        })
+      );
+      await updatedBook.setAuthors(authorsArray);
       res.json(updatedBook);
     }
   } catch (error) {
