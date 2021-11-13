@@ -1,5 +1,11 @@
 import React from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import {
+  setAuthor,
+  clearAuthor,
+  createAuthor,
+  updateAuthor,
+} from '../store/author';
 class AuthorForm extends React.Component {
   constructor(props) {
     super(props);
@@ -16,23 +22,27 @@ class AuthorForm extends React.Component {
   async submitForm(event) {
     event.preventDefault();
     if (this.props.match.params.name) {
-      const { data: author } = await axios.put(
-        `/api/authors/${this.props.match.params.name}`,
-        this.state
+      this.props.updateAuthor(
+        this.props.match.params.name,
+        this.state.name,
+        this.props.history
       );
-      this.props.history.push(`/authors/${author.name}`);
     } else {
-      const { data: author } = await axios.post('/api/authors', this.state);
-      this.props.history.push(`/authors/${author.name}`);
+      this.props.createAuthor(this.state.name, this.props.history);
     }
   }
-  async componentDidMount() {
+  componentDidMount() {
     if (this.props.match.params.name) {
-      const { data } = await axios.get(
-        `/api/authors/${this.props.match.params.name}`
-      );
+      this.props.setAuthor(this.props.match.params.name);
+    }
+  }
+  componentWillUnmount() {
+    this.props.clearAuthor();
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.author.name !== this.props.author.name) {
       this.setState({
-        name: data.name,
+        name: this.props.author.name || '',
       });
     }
   }
@@ -55,4 +65,14 @@ class AuthorForm extends React.Component {
     );
   }
 }
-export default AuthorForm;
+const mapStateToProps = (state) => ({
+  author: state.author,
+});
+const mapDispatchToProps = (dispatch) => ({
+  setAuthor: (authorName) => dispatch(setAuthor(authorName)),
+  clearAuthor: () => dispatch(clearAuthor()),
+  createAuthor: (name, history) => dispatch(createAuthor(name, history)),
+  updateAuthor: (oldName, newName, history) =>
+    dispatch(updateAuthor(oldName, newName, history)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(AuthorForm);

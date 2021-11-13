@@ -1,24 +1,26 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import BookRow from './BookRow';
+import { connect } from 'react-redux';
+import { fetchBooks } from '../store/books';
 
 class Books extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { books: [] };
-  }
-  async componentDidMount() {
-    const { data } = await axios.get('/api/books');
-    this.setState({ books: data });
+  componentDidMount() {
+    this.props.fetchBooks();
   }
   render() {
     return (
       <ul>
-        {this.state.books.map((book) => (
+        {this.props.books.map((book) => (
           <BookRow book={book} key={book.isbn13} />
         ))}
       </ul>
     );
   }
 }
-export default Books;
+const mapStateToProps = (state) => ({
+  books: state.books,
+});
+const mapDispatchToProps = (dispatch) => ({
+  fetchBooks: () => dispatch(fetchBooks()),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Books);

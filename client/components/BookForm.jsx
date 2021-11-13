@@ -1,5 +1,7 @@
 import React from 'react';
-import axios from 'axios';
+import { addBook, updateBook } from '../store/books';
+import { setBook, clearBook } from '../store/book';
+import { connect } from 'react-redux';
 class BookForm extends React.Component {
   constructor(props) {
     super(props);
@@ -18,29 +20,35 @@ class BookForm extends React.Component {
   updateField(event) {
     this.setState({ ...this.state, [event.target.name]: event.target.value });
   }
-  async submitForm(event) {
+  submitForm(event) {
     event.preventDefault();
     if (this.props.match.params.isbn13) {
-      await axios.put(
-        `/api/books/${this.props.match.params.isbn13}`,
-        this.state
-      );
+      this.props.updateBook(this.state);
     } else {
-      await axios.post('/api/books', this.state);
+      this.props.createBook(this.state);
     }
     this.props.history.push('/books');
   }
-  async componentDidMount() {
+  componentDidMount() {
     if (this.props.match.params.isbn13) {
-      const { data } = await axios.get(
-        `/api/books/${this.props.match.params.isbn13}`
-      );
+      this.props.setBook(this.props.match.params.isbn13);
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.book.isbn13 !== this.props.book.isbn13) {
       this.setState({
-        ...data,
-        publicationDate: new Date(data.publicationDate).toLocaleDateString(),
-        authors: data.authors.map((author) => author.name).join(', '),
+        ...this.props.book,
+        publicationDate: new Date(
+          this.props.book.publicationDate
+        ).toLocaleDateString(),
+        authors: this.props.book.authors
+          ? this.props.book.authors.map((author) => author.name).join(', ')
+          : '',
       });
     }
+  }
+  componentWillUnmount() {
+    this.props.clearBook();
   }
   render() {
     return (
@@ -115,4 +123,13 @@ class BookForm extends React.Component {
     );
   }
 }
-export default BookForm;
+const mapStateToProps = (state) => ({
+  book: state.book,
+});
+const mapDispatchToProps = (dispatch) => ({
+  addBook: (book) => dispatch(addBook(book)),
+  updateBook: (book) => dispatch(updateBook(book)),
+  setBook: (isbn13) => dispatch(setBook(isbn13)),
+  clearBook: () => dispatch(clearBook()),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(BookForm);

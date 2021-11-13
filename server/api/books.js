@@ -85,6 +85,7 @@ router.post('/', async (req, res, next) => {
       })
     );
     await createdBook.setAuthors(authorsArray);
+    createdBook.authors = authorsArray;
     res.json(createdBook);
   } catch (error) {
     next(error);
@@ -108,7 +109,6 @@ router.put('/:isbn13', async (req, res, next) => {
         publicationDate,
         authors,
       } = req.body;
-      console.log(req.body);
       const updatedBook = await foundBook.update({
         title,
         isbn13,
@@ -126,6 +126,7 @@ router.put('/:isbn13', async (req, res, next) => {
         })
       );
       await updatedBook.setAuthors(authorsArray);
+      updatedBook.authors = authorsArray;
       res.json(updatedBook);
     }
   } catch (error) {
